@@ -115,12 +115,12 @@ class ArticleTestCase(BlogTestCase):
 
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 2)
-        self.assertEqual(resp_json[0].title, self.article1.title)
-        self.assertEqual(resp_json[1].title, self.article2.title)
-        self.assertEqual(resp_json[0].author_id, self.user1.id)
-        self.assertEqual(resp_json[1].author_id, self.user2.id)
-        self.assertEqual(resp_json[0].content, self.article1.content)
-        self.assertEqual(resp_json[1].content, self.article2.content)
+        self.assertEqual(resp_json[0]['title'], self.article1.title)
+        self.assertEqual(resp_json[1]['title'], self.article2.title)
+        self.assertEqual(resp_json[0]['author_id'], self.user1.id)
+        self.assertEqual(resp_json[1]['author_id'], self.user2.id)
+        self.assertEqual(resp_json[0]['content'], self.article1.content)
+        self.assertEqual(resp_json[1]['content'], self.article2.content)
 
     def test_post_article(self):
         new_article = {'title': 'new article title',
@@ -134,7 +134,7 @@ class ArticleTestCase(BlogTestCase):
         self.assertEqual(article.author, self.user1)
 
     def test_get_article_detail(self):
-        resp = self.get('/api/article/{}'.format(self.aritcle1.id))
+        resp = self.get('/api/article/{}'.format(self.article1.id))
         self.assertEqual(resp.status_code, 200)
 
         resp_json = resp.json()
