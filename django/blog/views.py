@@ -46,19 +46,25 @@ def signout(request):
 
 
 def article(request):
-    if request.method == 'GET':
-        article_list = [article for article in Article.objects.all().values()]
-        return JsonResponse(article_list, safe=False)
-    elif request.method == 'POST':
-        return HttpResponse(status=500)
-    else:
+    if request.method not in ['GET', 'POST']:
         return HttpResponseNotAllowed(['GET', 'POST'])
+    else:
+        if not request.user.is_authenticated:
+            return HttpResponse(status=401)
+        if request.method == 'GET':
+            article_list = [
+                article for article in Article.objects.all().values()]
+            return JsonResponse(article_list, safe=False)
+        elif request.method == 'POST':
+            return HttpResponse(status=500)
 
 
 def article_detail(request, article_id=-1):
     if request.method == 'POST':
         return HttpResponseNotAllowed(['GET', 'PUT', 'DELETE'])
     else:
+        if not request.user.is_authenticated:
+            return HttpResponse(status=401)
         try:
             article = Article.objects.get(id=article_id)
         except Article.DoesNotExist:
