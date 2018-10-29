@@ -1,6 +1,7 @@
-from django.http import HttpResponse, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseNotFound, HttpResponseForbidden, JsonResponse
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import ensure_csrf_cookie
+from .models import Article, Comment
 import json
 
 
@@ -45,7 +46,8 @@ def signout(request):
 
 def article(request):
     if request.method == 'GET':
-        raise Exception("unimplemented")
+        article_list = [article for article in Article.objects.all().values()]
+        return JsonResponse(article_list, safe=False)
     elif request.method == 'POST':
         raise Exception("unimplemented")
     else:
@@ -56,10 +58,10 @@ def article_detail(request, article_id=-1):
     if request.method == 'POST':
         return HttpResponseNotAllowed(['GET', 'PUT', 'DELETE'])
     else:
-        q = Article.objects.filter(id=article_id)
-        if not q.exists():
-            return HttpResponse(status=404)
-        article = q[0]
+        try:
+            article = Article.objects.get(id=article_id)
+        except Article.DoesNotExist:
+            return HttpResponseNotFound()
         if request.method == 'GET':
             raise Exception("unimplemented")
         elif request.method == 'PUT':
