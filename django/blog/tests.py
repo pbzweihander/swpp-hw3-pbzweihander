@@ -192,3 +192,13 @@ class ArticleTestCase(BlogTestCase):
         self.assertEqual(self.delete('/api/article').status_code, 405)
 
         self.assertEqual(self.post('/api/article/0', {}).status_code, 405)
+
+    def test_unauthorized(self):
+        self.get('/api/signout')
+
+        self.assertEqual(self.get('/api/article').status_code, 401)
+        self.assertEqual(self.post('/api/article', {}).status_code, 401)
+
+        self.assertEqual(self.get('/api/article/0').status_code, 401)
+        self.assertEqual(self.put('/api/article/0', {}).status_code, 401)
+        self.assertEqual(self.delete('/api/article/0').status_code, 401)
