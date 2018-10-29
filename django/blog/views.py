@@ -1,4 +1,5 @@
-from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseNotFound, HttpResponseForbidden, JsonResponse
+from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponseNotAllowed, HttpResponseNotFound, HttpResponseForbidden
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import Article, Comment
@@ -49,7 +50,7 @@ def article(request):
         article_list = [article for article in Article.objects.all().values()]
         return JsonResponse(article_list, safe=False)
     elif request.method == 'POST':
-        raise Exception("unimplemented")
+        return HttpResponse(status=500)
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 
@@ -63,11 +64,11 @@ def article_detail(request, article_id=-1):
         except Article.DoesNotExist:
             return HttpResponseNotFound()
         if request.method == 'GET':
-            raise Exception("unimplemented")
+            return HttpResponse(status=500)
         elif request.method == 'PUT':
-            raise Exception("unimplemented")
+            return HttpResponse(status=500)
         elif request.method == 'DELETE':
-            raise Exception("unimplemented")
+            return HttpResponse(status=500)
 
 
 @ensure_csrf_cookie
