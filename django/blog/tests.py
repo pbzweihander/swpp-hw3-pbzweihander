@@ -106,13 +106,6 @@ class ArticleTestCase(BlogTestCase):
                            content="article2 content", author=user2)
         article2.save()
 
-        comment1 = Comment(article=article2,
-                           content='comment1 content', author=user1)
-        comment1.save()
-        comment2 = Comment(article=article1,
-                           content='comment2 content', author=user2)
-        comment2.save()
-
     def test_get_article(self):
         resp = self.get('/api/article')
         self.assertEqual(resp.status_code, 200)
