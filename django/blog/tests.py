@@ -81,6 +81,14 @@ class UserTestCase(BlogTestCase):
         resp = self.get('/api/signout')
         self.assertEqual(resp.status_code, 401)
 
+    def test_invalid_method(self):
+        self.assertEqual(self.get('/api/signup').status_code, 405)
+        self.assertEqual(self.put('/api/signup', {}).status_code, 405)
+        self.assertEqual(self.delete('/api/signup').status_code, 405)
+        self.assertEqual(self.get('/api/signin').status_code, 405)
+        self.assertEqual(self.put('/api/signin', {}).status_code, 405)
+        self.assertEqual(self.delete('/api/signin').status_code, 405)
+
 
 class ArticleTestCase(BlogTestCase):
     def setUp(self):
