@@ -1,0 +1,38 @@
+<div class="container">
+  <ngb-tabset>
+    <ngb-tab title="Write" id="write-tab-button">
+      <ng-template ngbTabContent>
+        <form class="col-lg-8">
+          <div class="form-group">
+            <label class="control-label" for="article-title-input">
+              Title
+            </label>
+            <input id="article-title-input" type="text" class="form-control input-md" name="article-title-input"
+              [(ngModel)]="article.title" #title="ngModel" required>
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="article-content-input">
+              Contents
+            </label>
+            <textarea id="article-content-input" type="text" class="form-control input-md" name="article-content-input"
+              [(ngModel)]="article.content" #content="ngModel" required></textarea>
+          </div>
+        </form>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab title="Preview" id="preview-tab-button">
+      <ng-template ngbTabContent>
+        <app-article-view [article]="article" [author]="currentUser"></app-article-view>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+  <button id="back-create-article-button" class="btn btn-secondary" (click)="back()" (disabled)="submitting">
+    Back
+  </button>
+  <button type="submit" id="confirm-create-article-button" class="btn btn-primary" (click)="write()">
+    <span *ngIf="!submitting; else loading">Confirm</span>
+  </button>
+</div>
+<ng-template #loading>
+  <div class="spinning-loader-small"></div>
+</ng-template>

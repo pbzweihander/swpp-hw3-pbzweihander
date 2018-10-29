@@ -1,0 +1,40 @@
+<ul class="list-group" *ngIf="comments; else loading">
+  <li class="list-group-item" *ngFor="let comment of comments">
+    <div class="comment" *ngIf="comment.author_id | authorIdToAuthor | async as author; else loading_small">
+      <div class="badge badge-pill badge-info" [ngClass]="{'badge-info': comment.author_id !== currentUser.id, 'badge-primary': comment.author_id === currentUser.id}">
+        {{author}}
+      </div>
+      <div class="content">
+        {{comment.content}}
+      </div>
+      <div class="btn-group comment-control" *ngIf="comment.author_id === currentUser.id">
+        <button id="edit-comment-button" type="button" class="btn btn-secondary btn-sm" (click)="editComment(comment.id)">
+          Edit
+        </button>
+        <button id="delete-comment-button" type="button" class="btn btn-danger btn-sm" (click)="deleteComment(comment.id)">
+          <span *ngIf="!deleting; else loading_small">Delete</span>
+        </button>
+      </div>
+    </div>
+  </li>
+  <li class="list-group-item">
+    <form (ngSubmit)="newComment()">
+      <div class="comment">
+        <div class="badge badge-pill badge-primary">
+          {{currentUser.name}}
+        </div>
+        <input type="text" class="form-control input-lg content" id="new-comment-content-input" placeholder="New Comment..."
+          name="new-comment-content-input" [(ngModel)]="newCommentContent">
+        <button type="submit" class="btn btn-primary btn-sm btn-submit" id="confirm-create-comment-button">
+          <span *ngIf="!submitting; else loading_small">Comment</span>
+        </button>
+      </div>
+    </form>
+  </li>
+</ul>
+<ng-template #loading>
+  <div class="spinning-loader"></div>
+</ng-template>
+<ng-template #loading_small>
+  <div class="spinning-loader-small"></div>
+</ng-template>

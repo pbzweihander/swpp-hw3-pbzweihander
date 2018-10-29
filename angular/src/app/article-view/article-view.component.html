@@ -1,0 +1,12 @@
+<div *ngIf="article && author; else loading">
+  <h1 class="mt-4" id="article-title">{{article.title}}</h1>
+  <p class="lead" id="article-author">{{author.name}}</p>
+  <hr>
+  <p id="article-content">
+    {{article.content}}
+  </p>
+  <hr>
+</div>
+<ng-template #loading>
+  <div class="spinning-loader"></div>
+</ng-template>

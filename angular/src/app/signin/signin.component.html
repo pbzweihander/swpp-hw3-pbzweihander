@@ -1,0 +1,15 @@
+<div class="text-center">
+  <form (ngSubmit)="signin()">
+    <h3 class="mb-3">Login</h3>
+    <input type="email" class="form-control" id="email-input" placeholder="Email Address" name="email-input"
+      [(ngModel)]="loginForm.email" #email="ngModel" required autofocus>
+    <input type="password" class="form-control" id="pw-input" placeholder="Password" name="pw-input" [(ngModel)]="loginForm.password"
+      #password="ngModel" required>
+    <button type="submit" class="btn btn-lg btn-primary btn-block" id="signin-button">
+      <span *ngIf="!submitting; else loading">Login</span>
+    </button>
+  </form>
+</div>
+<ng-template #loading>
+  <div class="spinning-loader-small"></div>
+</ng-template>

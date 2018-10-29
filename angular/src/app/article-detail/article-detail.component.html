@@ -1,0 +1,18 @@
+<div class="container">
+  <app-article-view [article]="article" [author]="author"></app-article-view>
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-secondary" id="back-detail-article-button" (click)="this.back()">
+      Back
+    </button>
+    <button type="button" class="btn btn-info" id="delete-edit-button" (click)="this.edit()" *ngIf="article && article.author_id === currentUser.id">
+      Edit
+    </button>
+    <button type="button" class="btn btn-danger" id="delete-article-button" (click)="this.delete()" *ngIf="article &&article.author_id === currentUser.id">
+      <span *ngIf="!deleting; else loading">Delete</span>
+    </button>
+  </div>
+  <app-comments *ngIf="article" [articleId]="article.id"></app-comments>
+</div>
+<ng-template #loading>
+  <div class="spinning-loader-small"></div>
+</ng-template>

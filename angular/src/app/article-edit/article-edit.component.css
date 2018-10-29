@@ -1,0 +1,6 @@
+.btn {
+  margin: 10px 0 0 10px;
+}
+.btn.btn-primary {
+  width: 90px;
+}

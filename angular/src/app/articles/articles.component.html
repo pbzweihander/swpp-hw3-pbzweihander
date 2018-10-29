@@ -1,0 +1,39 @@
+<button id="create-article-button" class="btn btn-primary" (click)="this.createArticle()">Create Article</button>
+<div class="scroll">
+  <div class="container">
+    <div class="articles card-columns" *ngIf="articles; else loading">
+      <div class="cards">
+        <div *ngFor="let article of articles">
+          <div class="card" *ngIf="article.author_id | authorIdToAuthor | async as author; else loading_card">
+            <div class="card-body">
+              <button routerLink="/articles/{{article.id}}" class="btn btn-link card-title">
+                <h5 class="">
+                  <span class="badge badge-pill badge-secondary">{{article.id}}</span>
+                  {{article.title}}
+                </h5>
+              </button>
+              <h6 class="card-subtitle mb-2 text-muted">
+                {{author}}
+              </h6>
+              <p class="card-text">{{article.content}}</p>
+              <button routerLink="/articles/{{article.id}}" class="btn btn-info">
+                Details
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #loading>
+  <div class="spinning-loader"></div>
+</ng-template>
+<ng-template #loading_card>
+  <div class="card">
+    <div class="card-body">
+      <div class="spinning-loader"></div>
+      <span class="btn btn-info">Loading...</span>
+    </div>
+  </div>
+</ng-template>
