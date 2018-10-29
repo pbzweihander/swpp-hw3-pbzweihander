@@ -151,6 +151,9 @@ class ArticleTestCase(BlogTestCase):
         self.assertEqual(resp_json.author_id, 1)
         self.assertEqual(resp_json.content, "article2 content")
 
+        resp = self.get('/api/article/3')
+        self.assertEqual(resp.status_code, 404)
+
     def test_put_article_detail(self):
         new_article = {'title': 'new article title',
                        'content': 'new article content'}

@@ -56,9 +56,11 @@ def article_detail(request, article_id=-1):
     if request.method == 'POST':
         return HttpResponseNotAllowed(['GET', 'PUT', 'DELETE'])
     else:
-        if article_id < 0:
+        q = Article.objects.filter(id=article_id)
+        if not q.exists():
             return HttpResponse(status=404)
-        elif request.method == 'GET':
+        article = q[0]
+        if request.method == 'GET':
             raise Exception("unimplemented")
         elif request.method == 'PUT':
             raise Exception("unimplemented")
