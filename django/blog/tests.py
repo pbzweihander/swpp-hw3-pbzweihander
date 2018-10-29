@@ -106,6 +106,10 @@ class ArticleTestCase(BlogTestCase):
                            content="article2 content", author=user2)
         article2.save()
 
+        self.post('/api/signin', {'username': 'user1',
+                                  'password': 'user1secret'})
+        self.user = user1
+
     def test_get_article(self):
         resp = self.get('/api/article')
         self.assertEqual(resp.status_code, 200)
@@ -118,6 +122,57 @@ class ArticleTestCase(BlogTestCase):
         self.assertEqual(resp_json[1].author_id, 1)
         self.assertEqual(resp_json[0].content, "article1 content")
         self.assertEqual(resp_json[1].content, "article2 content")
+
+    def test_post_article(self):
+        new_article = {'title': 'new article title',
+                       'content': 'new article content'}
+        resp = self.post('/api/article', new_article)
+        self.assertEqual(resp.status_code, 201)
+
+        article = Article.objects.get(id=2)
+        self.assertEqual(article.title, new_article['title'])
+        self.assertEqual(article.content, new_article['content'])
+        self.assertEqual(article.author, self.user)
+
+    def test_get_article_detail(self):
+        resp = self.get('/api/article/0')
+        self.assertEqual(resp.status_code, 200)
+
+        resp_json = resp.json()
+        self.assertEqual(resp_json.title, "article1 title")
+        self.assertEqual(resp_json.author_id, 0)
+        self.assertEqual(resp_json.content, "article1 content")
+
+        resp = self.get('/api/article/1')
+        self.assertEqual(resp.status_code, 200)
+
+        resp_json = resp.json()
+        self.assertEqual(resp_json.title, "article2 title")
+        self.assertEqual(resp_json.author_id, 1)
+        self.assertEqual(resp_json.content, "article2 content")
+
+    def test_put_article_detail(self):
+        new_article = {'title': 'new article title',
+                       'content': 'new article content'}
+        resp = self.put('/api/article/0', new_article)
+        self.assertEqual(resp.status_code, 200)
+
+        article = Article.objects.get(id=0)
+        self.assertEqual(article.title, new_article['title'])
+        self.assertEqual(article.content, new_article['content'])
+
+        resp = self.put('/api/article/1', new_article)
+        self.assertEqual(resp.status_code, 403)
+
+    def test_delete_article_detail(self):
+        resp = self.delete('/api/article/0')
+        self.assertEqual(resp.status_code, 200)
+
+        article = Article.objects.filter(id=0)
+        self.assertEqual(article.len(), 0)
+
+        resp = self.delete('/api/article/1')
+        self.assertEqual(resp.status_code, 403)
 
     def test_invalid_method(self):
         self.assertEqual(self.put('/api/article', {}).status_code, 405)
