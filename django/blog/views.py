@@ -43,6 +43,29 @@ def signout(request):
         return HttpResponseNotAllowed(['GET'])
 
 
+def article(request):
+    if request.method == 'GET':
+        raise Exception("unimplemented")
+    elif request.method == 'POST':
+        raise Exception("unimplemented")
+    else:
+        return HttpResponseNotAllowed(['GET', 'POST'])
+
+
+def article_detail(request, article_id=-1):
+    if request.method == 'POST':
+        return HttpResponseNotAllowed(['GET', 'PUT', 'DELETE'])
+    else:
+        if article_id < 0:
+            return HttpResponse(status=404)
+        elif request.method == 'GET':
+            raise Exception("unimplemented")
+        elif request.method == 'PUT':
+            raise Exception("unimplemented")
+        elif request.method == 'DELETE':
+            raise Exception("unimplemented")
+
+
 @ensure_csrf_cookie
 def token(request):
     if request.method == 'GET':
