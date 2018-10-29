@@ -15,6 +15,21 @@ def signup(request):
         return HttpResponseNotAllowed(['POST'])
 
 
+def signin(request):
+    from django.contrib.auth import authenticate
+    if request.method == 'POST':
+        req_data = json.loads(request.body.decode())
+        username = req_data['username']
+        password = req_data['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            return HttpResponse(status=201)
+        else:
+            return HttpResponse(status=401)
+    else:
+        return HttpResponseNotAllowed(['POST'])
+
+
 @ensure_csrf_cookie
 def token(request):
     if request.method == 'GET':
