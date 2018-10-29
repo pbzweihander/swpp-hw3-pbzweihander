@@ -85,6 +85,7 @@ class UserTestCase(BlogTestCase):
         self.assertEqual(self.get('/api/signup').status_code, 405)
         self.assertEqual(self.put('/api/signup', {}).status_code, 405)
         self.assertEqual(self.delete('/api/signup').status_code, 405)
+
         self.assertEqual(self.get('/api/signin').status_code, 405)
         self.assertEqual(self.put('/api/signin', {}).status_code, 405)
         self.assertEqual(self.delete('/api/signin').status_code, 405)
@@ -124,3 +125,9 @@ class ArticleTestCase(BlogTestCase):
         self.assertEqual(resp_json[1].author_id, 1)
         self.assertEqual(resp_json[0].content, "article1 content")
         self.assertEqual(resp_json[1].content, "article2 content")
+
+    def test_invalid_method(self):
+        self.assertEqual(self.put('/api/article', {}).status_code, 405)
+        self.assertEqual(self.delete('/api/article').status_code, 405)
+
+        self.assertEqual(self.post('/api/article/0', {}).status_code, 405)
