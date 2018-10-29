@@ -94,21 +94,20 @@ class UserTestCase(BlogTestCase):
 class ArticleTestCase(BlogTestCase):
     def setUp(self):
         super().setUp()
-        user1 = User.objects.create_user(
+        self.user1 = User.objects.create_user(
             username='user1', password='user1secret')
-        user2 = User.objects.create_user(
+        self.user2 = User.objects.create_user(
             username='user2', password='user2secret')
 
-        article1 = Article(title='article1 title',
-                           content='article1 content', author=user1)
-        article1.save()
-        article2 = Article(title='article2 title',
-                           content="article2 content", author=user2)
-        article2.save()
+        self.article1 = Article(title='article1 title',
+                                content='article1 content', author=self.user1)
+        self.article1.save()
+        self.article2 = Article(title='article2 title',
+                                content="article2 content", author=self.user2)
+        self.article2.save()
 
         self.post('/api/signin', {'username': 'user1',
                                   'password': 'user1secret'})
-        self.user = user1
 
     def test_get_article(self):
         resp = self.get('/api/article')
@@ -116,12 +115,12 @@ class ArticleTestCase(BlogTestCase):
 
         resp_json = resp.json()
         self.assertEqual(len(resp_json), 2)
-        self.assertEqual(resp_json[0].title, "article1 title")
-        self.assertEqual(resp_json[1].title, "article2 title")
-        self.assertEqual(resp_json[0].author_id, 0)
-        self.assertEqual(resp_json[1].author_id, 1)
-        self.assertEqual(resp_json[0].content, "article1 content")
-        self.assertEqual(resp_json[1].content, "article2 content")
+        self.assertEqual(resp_json[0].title, self.article1.title)
+        self.assertEqual(resp_json[1].title, self.article2.title)
+        self.assertEqual(resp_json[0].author_id, self.user1.id)
+        self.assertEqual(resp_json[1].author_id, self.user2.id)
+        self.assertEqual(resp_json[0].content, self.article1.content)
+        self.assertEqual(resp_json[1].content, self.article2.content)
 
     def test_post_article(self):
         new_article = {'title': 'new article title',
@@ -129,52 +128,59 @@ class ArticleTestCase(BlogTestCase):
         resp = self.post('/api/article', new_article)
         self.assertEqual(resp.status_code, 201)
 
-        article = Article.objects.get(id=2)
+        article = Article.objects.all()[-1]
         self.assertEqual(article.title, new_article['title'])
         self.assertEqual(article.content, new_article['content'])
-        self.assertEqual(article.author, self.user)
+        self.assertEqual(article.author, self.user1)
 
     def test_get_article_detail(self):
-        resp = self.get('/api/article/0')
+        resp = self.get('/api/article/{}'.format(self.aritcle1.id))
         self.assertEqual(resp.status_code, 200)
 
         resp_json = resp.json()
-        self.assertEqual(resp_json.title, "article1 title")
-        self.assertEqual(resp_json.author_id, 0)
-        self.assertEqual(resp_json.content, "article1 content")
+        self.assertEqual(resp_json.title, self.article1.title)
+        self.assertEqual(resp_json.author_id, self.user1.id)
+        self.assertEqual(resp_json.content, self.article1.content)
 
-        resp = self.get('/api/article/1')
+        resp = self.get('/api/article/{}'.format(self.article2.id))
         self.assertEqual(resp.status_code, 200)
 
         resp_json = resp.json()
-        self.assertEqual(resp_json.title, "article2 title")
-        self.assertEqual(resp_json.author_id, 1)
-        self.assertEqual(resp_json.content, "article2 content")
+        self.assertEqual(resp_json.title, self.article2.title)
+        self.assertEqual(resp_json.author_id, self.user2.id)
+        self.assertEqual(resp_json.content, self.article2.content)
 
-        resp = self.get('/api/article/3')
+        resp = self.get('/api/article/-1')
         self.assertEqual(resp.status_code, 404)
 
     def test_put_article_detail(self):
         new_article = {'title': 'new article title',
                        'content': 'new article content'}
-        resp = self.put('/api/article/0', new_article)
+        resp = self.put(
+            '/api/article/{}'.format(self.article1.id), new_article)
         self.assertEqual(resp.status_code, 200)
 
-        article = Article.objects.get(id=0)
+        article = Article.objects.get(id=self.article1.id)
         self.assertEqual(article.title, new_article['title'])
         self.assertEqual(article.content, new_article['content'])
 
-        resp = self.put('/api/article/1', new_article)
+        resp = self.put(
+            '/api/article/{}'.format(self.article2.id), new_article)
         self.assertEqual(resp.status_code, 403)
 
+        resp = self.put(
+            '/api/article/-1', new_article)
+        self.assertEqual(resp.status_code, 404)
+
     def test_delete_article_detail(self):
-        resp = self.delete('/api/article/0')
+        id = self.article1.id
+        resp = self.delete('/api/article/{}'.format(id))
         self.assertEqual(resp.status_code, 200)
 
-        article = Article.objects.filter(id=0)
-        self.assertEqual(article.len(), 0)
+        article = Article.objects.filter(id=id)
+        self.assertTrue(not article.exists())
 
-        resp = self.delete('/api/article/1')
+        resp = self.delete('/api/article/{}'.format(self.article2.id))
         self.assertEqual(resp.status_code, 403)
 
     def test_invalid_method(self):
