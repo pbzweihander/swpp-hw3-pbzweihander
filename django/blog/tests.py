@@ -117,8 +117,8 @@ class ArticleTestCase(BlogTestCase):
         self.assertEqual(len(resp_json), 2)
         self.assertEqual(resp_json[0]['title'], self.article1.title)
         self.assertEqual(resp_json[1]['title'], self.article2.title)
-        self.assertEqual(resp_json[0]['author_id'], self.user1.id)
-        self.assertEqual(resp_json[1]['author_id'], self.user2.id)
+        self.assertEqual(resp_json[0]['author'], self.user1.id)
+        self.assertEqual(resp_json[1]['author'], self.user2.id)
         self.assertEqual(resp_json[0]['content'], self.article1.content)
         self.assertEqual(resp_json[1]['content'], self.article2.content)
 
@@ -138,17 +138,17 @@ class ArticleTestCase(BlogTestCase):
         self.assertEqual(resp.status_code, 200)
 
         resp_json = resp.json()
-        self.assertEqual(resp_json.title, self.article1.title)
-        self.assertEqual(resp_json.author_id, self.user1.id)
-        self.assertEqual(resp_json.content, self.article1.content)
+        self.assertEqual(resp_json['title'], self.article1.title)
+        self.assertEqual(resp_json['author'], self.user1.id)
+        self.assertEqual(resp_json['content'], self.article1.content)
 
         resp = self.get('/api/article/{}'.format(self.article2.id))
         self.assertEqual(resp.status_code, 200)
 
         resp_json = resp.json()
-        self.assertEqual(resp_json.title, self.article2.title)
-        self.assertEqual(resp_json.author_id, self.user2.id)
-        self.assertEqual(resp_json.content, self.article2.content)
+        self.assertEqual(resp_json['title'], self.article2.title)
+        self.assertEqual(resp_json['author'], self.user2.id)
+        self.assertEqual(resp_json['content'], self.article2.content)
 
         resp = self.get('/api/article/-1')
         self.assertEqual(resp.status_code, 404)
