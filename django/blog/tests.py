@@ -10,22 +10,24 @@ class BlogTestCase(TestCase):
 
     def reset_client(self):
         self.client = Client(enforce_csrf_checks=True)
-        self.csrftoken = self.client.get(
-            '/api/token').cookies['csrftoken'].value
 
     def get(self, url):
-        return self.client.get(url, HTTP_X_CSRFTOKEN=self.csrftoken)
+        csrftoken = self.client.get('/api/token').cookies['csrftoken'].value
+        return self.client.get(url, HTTP_X_CSRFTOKEN=csrftoken)
 
     def post(self, url, obj):
+        csrftoken = self.client.get('/api/token').cookies['csrftoken'].value
         return self.client.post(
-            url, json.dumps(obj), content_type='application/json', HTTP_X_CSRFTOKEN=self.csrftoken)
+            url, json.dumps(obj), content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken)
 
     def put(self, url, obj):
+        csrftoken = self.client.get('/api/token').cookies['csrftoken'].value
         return self.client.put(
-            url, json.dumps(obj), content_type='application/json', HTTP_X_CSRFTOKEN=self.csrftoken)
+            url, json.dumps(obj), content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken)
 
     def delete(self, url):
-        return self.client.delete(url, HTTP_X_CSRFTOKEN=self.csrftoken)
+        csrftoken = self.client.get('/api/token').cookies['csrftoken'].value
+        return self.client.delete(url, HTTP_X_CSRFTOKEN=csrftoken)
 
 
 class CsrfTestCase(TestCase):
@@ -71,8 +73,6 @@ class UserTestCase(BlogTestCase):
 
         resp = self.get('/api/signout')
         self.assertEqual(resp.status_code, 204)
-
-        self.reset_client()
 
         resp = self.post('/api/signin',
                          {'username': 'rustacean', 'password': 'ihaterust'})
