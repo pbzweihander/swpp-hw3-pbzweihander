@@ -90,6 +90,10 @@ class UserTestCase(BlogTestCase):
         self.assertEqual(self.put('/api/signin', {}).status_code, 405)
         self.assertEqual(self.delete('/api/signin').status_code, 405)
 
+        self.assertEqual(self.post('/api/signout', {}).status_code, 405)
+        self.assertEqual(self.put('/api/signout', {}).status_code, 405)
+        self.assertEqual(self.delete('/api/signout').status_code, 405)
+
 
 class ArticleTestCase(BlogTestCase):
     def setUp(self):
