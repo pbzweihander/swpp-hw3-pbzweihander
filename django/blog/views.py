@@ -6,6 +6,22 @@ from .models import Article, Comment
 import json
 
 
+def HttpResponseOk():
+    return HttpResponse(status=200)
+
+
+def HttpResponseCreated():
+    return HttpResponse(status=201)
+
+
+def HttpResponseNoContent():
+    return HttpResponse(status=204)
+
+
+def HttpResponseUnauthorized():
+    return HttpResponse(status=401)
+
+
 def format_article(article):
     article['author'] = article.pop('author_id')
     return article
@@ -17,7 +33,7 @@ def signup(request):
         username = req_data['username']
         password = req_data['password']
         User.objects.create_user(username=username, password=password)
-        return HttpResponse(status=201)
+        return HttpResponseCreated()
     else:
         return HttpResponseNotAllowed(['POST'])
 
@@ -31,9 +47,9 @@ def signin(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return HttpResponse(status=204)
+            return HttpResponseNoContent()
         else:
-            return HttpResponse(status=401)
+            return HttpResponseUnauthorized()
     else:
         return HttpResponseNotAllowed(['POST'])
 
@@ -43,9 +59,9 @@ def signout(request):
     if request.method == 'GET':
         if request.user.is_authenticated:
             logout(request)
-            return HttpResponse(status=204)
+            return HttpResponseNoContent()
         else:
-            return HttpResponse(status=401)
+            return HttpResponseUnauthorized()
     else:
         return HttpResponseNotAllowed(['GET'])
 
@@ -55,7 +71,7 @@ def article(request):
         return HttpResponseNotAllowed(['GET', 'POST'])
     else:
         if not request.user.is_authenticated:
-            return HttpResponse(status=401)
+            return HttpResponseUnauthorized()
         if request.method == 'GET':
             article_list = list(map(
                 format_article,
@@ -63,7 +79,11 @@ def article(request):
             ))
             return JsonResponse(article_list, safe=False)
         elif request.method == 'POST':
-            return HttpResponse(status=500)
+            body = json.loads(request.body.decode())
+            article = Article(
+                title=body['title'], content=body['content'], author=request.user)
+            article.save()
+            return HttpResponseCreated()
 
 
 def article_detail(request, article_id=-1):
@@ -71,7 +91,7 @@ def article_detail(request, article_id=-1):
         return HttpResponseNotAllowed(['GET', 'PUT', 'DELETE'])
     else:
         if not request.user.is_authenticated:
-            return HttpResponse(status=401)
+            return HttpResponseUnauthorized()
         try:
             article = Article.objects.get(id=article_id)
         except Article.DoesNotExist:

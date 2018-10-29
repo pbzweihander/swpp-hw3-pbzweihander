@@ -132,7 +132,8 @@ class ArticleTestCase(BlogTestCase):
         resp = self.post('/api/article', new_article)
         self.assertEqual(resp.status_code, 201)
 
-        article = Article.objects.all()[-1]
+        all_articles = Article.objects.all()
+        article = all_articles[len(all_articles) - 1]
         self.assertEqual(article.title, new_article['title'])
         self.assertEqual(article.content, new_article['content'])
         self.assertEqual(article.author, self.user1)
