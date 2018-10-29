@@ -25,6 +25,9 @@ class CsrfTestCase(TestCase):
 
 class BlogTestCase(TestCase):
     def setUp(self):
+        self.reset_client()
+
+    def reset_client(self):
         self.client = Client(enforce_csrf_checks=True)
         self.csrftoken = self.client.get(
             '/api/token').cookies['csrftoken'].value
@@ -53,15 +56,23 @@ class BlogTestCase(TestCase):
                               content='Comment!', author=new_user)
         new_comment.save()
 
-    def test_sign_up_and_sign_in(self):
+    def test_sign_up_in_and_out(self):
         resp = self.post('/api/signup',
                          {'username': 'rustacean', 'password': 'iluvrust'})
         self.assertEqual(resp.status_code, 201)
 
         resp = self.post('/api/signin',
                          {'username': 'rustacean', 'password': 'iluvrust'})
-        self.assertEqual(resp.status_code, 201)
+        self.assertEqual(resp.status_code, 204)
+
+        resp = self.get('/api/signout')
+        self.assertEqual(resp.status_code, 204)
+
+        self.reset_client()
 
         resp = self.post('/api/signin',
                          {'username': 'rustacean', 'password': 'ihaterust'})
+        self.assertEqual(resp.status_code, 401)
+
+        resp = self.get('/api/signout')
         self.assertEqual(resp.status_code, 401)

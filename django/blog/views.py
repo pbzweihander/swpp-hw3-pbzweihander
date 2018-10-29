@@ -16,18 +16,31 @@ def signup(request):
 
 
 def signin(request):
-    from django.contrib.auth import authenticate
+    from django.contrib.auth import authenticate, login
     if request.method == 'POST':
         req_data = json.loads(request.body.decode())
         username = req_data['username']
         password = req_data['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            return HttpResponse(status=201)
+            login(request, user)
+            return HttpResponse(status=204)
         else:
             return HttpResponse(status=401)
     else:
         return HttpResponseNotAllowed(['POST'])
+
+
+def signout(request):
+    from django.contrib.auth import logout
+    if request.method == 'GET':
+        if request.user.is_authenticated:
+            logout(request)
+            return HttpResponse(status=204)
+        else:
+            return HttpResponse(status=401)
+    else:
+        return HttpResponseNotAllowed(['GET'])
 
 
 @ensure_csrf_cookie
