@@ -6,6 +6,11 @@ from .models import Article, Comment
 import json
 
 
+def format_article(article):
+    article['author'] = article.pop('author_id')
+    return article
+
+
 def signup(request):
     if request.method == 'POST':
         req_data = json.loads(request.body.decode())
@@ -52,8 +57,10 @@ def article(request):
         if not request.user.is_authenticated:
             return HttpResponse(status=401)
         if request.method == 'GET':
-            article_list = [
-                article for article in Article.objects.all().values()]
+            article_list = list(map(
+                format_article,
+                [article for article in Article.objects.all().values()]
+            ))
             return JsonResponse(article_list, safe=False)
         elif request.method == 'POST':
             return HttpResponse(status=500)
