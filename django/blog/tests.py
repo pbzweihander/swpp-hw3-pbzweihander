@@ -224,3 +224,50 @@ class ArticleTestCase(BlogTestCase):
         self.assertEqual(self.get('/api/article/0').status_code, 404)
         self.assertEqual(self.put('/api/article/0', {}).status_code, 404)
         self.assertEqual(self.delete('/api/article/0').status_code, 404)
+
+
+class CommentTestCase(BlogTestCase):
+    def setUp(self):
+        super().setUp()
+        self.user1 = User.objects.create_user(
+            username='user1', password='user1secret')
+        self.user2 = User.objects.create_user(
+            username='user2', password='user2secret')
+
+        self.article1 = Article(title='article1 title',
+                                content='article1 content', author=self.user1)
+        self.article1.save()
+
+        self.comment1 = Comment(article=self.article1,
+                                content='comment 1 content', author=self.user1)
+        self.comment1.save()
+        self.comment2 = Comment(article=self.article1,
+                                content='comment 2 content', author=self.user2)
+        self.comment2.save()
+
+        self.post('/api/signin', {'username': 'user1',
+                                  'password': 'user1secret'})
+
+    def test_invalid_method(self):
+        self.assertEqual(
+            self.put('/api/article/0/comment', {}).status_code, 405)
+        self.assertEqual(self.delete(
+            '/api/article/0/comment').status_code, 405)
+
+        self.assertEqual(self.post('/api/comment/0', {}).status_code, 405)
+
+    def test_unauthorized(self):
+        self.get('/api/signout')
+
+        self.assertEqual(self.get('/api/article/0/comment').status_code, 401)
+        self.assertEqual(
+            self.post('/api/article/0/comment', {}).status_code, 401)
+
+        self.assertEqual(self.get('/api/comment/0').status_code, 401)
+        self.assertEqual(self.put('/api/comment/0', {}).status_code, 401)
+        self.assertEqual(self.delete('/api/comment/0').status_code, 401)
+
+    def test_not_found(self):
+        self.assertEqual(self.get('/api/comment/0').status_code, 404)
+        self.assertEqual(self.put('/api/comment/0', {}).status_code, 404)
+        self.assertEqual(self.delete('/api/comment/0').status_code, 404)

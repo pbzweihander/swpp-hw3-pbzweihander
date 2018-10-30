@@ -125,6 +125,14 @@ def article_detail(request, article_id=-1):
             return HttpResponse(status=500)
 
 
+def comment(request, article_id):
+    return HttpResponse(status=500)
+
+
+def comment_detail(request, comment_id):
+    return HttpResponse(status=500)
+
+
 @ensure_csrf_cookie
 def token(request):
     if request.method == 'GET':
