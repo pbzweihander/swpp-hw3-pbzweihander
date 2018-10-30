@@ -93,7 +93,8 @@ def article(request):
             article.save()
             return HttpResponseCreated()
         else:  # pragma: no cover
-            return HttpResponse(status=500)
+            # unreachable code
+            raise Exception("unreachable code")
 
 
 def article_detail(request, article_id=-1):
@@ -122,7 +123,8 @@ def article_detail(request, article_id=-1):
             article.delete()
             return HttpResponseOk()
         else:  # pragma: no cover
-            return HttpResponse(status=500)
+            # unreachable code
+            raise Exception("unreachable code")
 
 
 def comment(request, article_id):
