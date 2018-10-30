@@ -115,7 +115,10 @@ def article_detail(request, article_id=-1):
             article.save()
             return HttpResponseOk()
         elif request.method == 'DELETE':
-            return HttpResponse(status=500)
+            if request.user != article.author:
+                return HttpResponseForbidden()
+            article.delete()
+            return HttpResponseOk()
 
 
 @ensure_csrf_cookie
