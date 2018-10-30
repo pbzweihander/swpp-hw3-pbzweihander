@@ -245,6 +245,72 @@ class CommentTestCase(BlogTestCase):
         self.post('/api/signin', {'username': 'user1',
                                   'password': 'user1secret'})
 
+    def test_get_comment(self):
+        resp = self.get('/api/article/{}/comment'.format(self.article1.id))
+        self.assertEqual(resp.status_code, 200)
+
+        resp_json = resp.json()
+        self.assertEqual(len(resp_json), 2)
+        self.assertEqual(resp_json[0]['article'], self.article1.id)
+        self.assertEqual(resp_json[1]['article'], self.article1.id)
+        self.assertEqual(resp_json[0]['author'], self.user1.id)
+        self.assertEqual(resp_json[1]['author'], self.user2.id)
+        self.assertEqual(resp_json[0]['content'], self.comment1.content)
+        self.assertEqual(resp_json[1]['content'], self.comment2.content)
+
+    def test_post_comment(self):
+        new_comment = {'content': 'new comment content'}
+        resp = self.post(
+            '/api/article/{}/comment'.format(self.article1.id), new_comment)
+        self.assertEqual(resp.status_code, 201)
+
+        all_comments = Comment.objects.all()
+        comment = all_comments[len(all_comments) - 1]
+        self.assertEqual(comment.article, self.article1.id)
+        self.assertEqual(comment.content, new_comment['content'])
+        self.assertEqual(comment.author, self.user1)
+
+    def test_get_comment_detail(self):
+        resp = self.get('/api/comment/{}'.format(self.comment1.id))
+        self.assertEqual(resp.status_code, 200)
+
+        resp_json = resp.json()
+        self.assertEqual(resp_json['article'], self.article1.id)
+        self.assertEqual(resp_json['author'], self.user1.id)
+        self.assertEqual(resp_json['content'], self.comment1.content)
+
+        resp = self.get('/api/comment/{}'.format(self.comment2.id))
+        self.assertEqual(resp.status_code, 200)
+
+        resp_json = resp.json()
+        self.assertEqual(resp_json['article'], self.article1.id)
+        self.assertEqual(resp_json['author'], self.user2.id)
+        self.assertEqual(resp_json['content'], self.comment2.content)
+
+    def test_put_comment_detail(self):
+        new_comment = {'content': 'new comment content'}
+        resp = self.put(
+            '/api/comment/{}'.format(self.comment1.id), new_comment)
+        self.assertEqual(resp.status_code, 200)
+
+        comment = Comment.objects.get(id=self.comment1.id)
+        self.assertEqual(comment.content, new_comment['content'])
+
+        resp = self.put(
+            '/api/comment/{}'.format(self.article2.id), new_comment)
+        self.assertEqual(resp.status_code, 403)
+
+    def test_delete_comment_detail(self):
+        id = self.comment1.id
+        resp = self.delete('/api/comment/{}'.format(id))
+        self.assertEqual(resp.status_code, 200)
+
+        comment = Comment.objects.filter(id=id)
+        self.assertTrue(not comment.exists())
+
+        resp = self.delete('/api/article/{}'.format(self.comment2.id))
+        self.assertEqual(resp.status_code, 403)
+
     def test_invalid_method(self):
         self.assertEqual(
             self.put('/api/article/0/comment', {}).status_code, 405)
