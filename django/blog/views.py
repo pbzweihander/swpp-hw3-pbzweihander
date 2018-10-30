@@ -107,7 +107,13 @@ def article_detail(request, article_id=-1):
         if request.method == 'GET':
             return JsonResponse(format_article(article), safe=False)
         elif request.method == 'PUT':
-            return HttpResponse(status=500)
+            if request.user != article.author:
+                return HttpResponseForbidden()
+            body = json.loads(request.body.decode())
+            article.title = body['title']
+            article.content = body['content']
+            article.save()
+            return HttpResponseOk()
         elif request.method == 'DELETE':
             return HttpResponse(status=500)
 
