@@ -171,9 +171,6 @@ class ArticleTestCase(BlogTestCase):
         self.assertEqual(resp_json['author'], self.user2.id)
         self.assertEqual(resp_json['content'], self.article2.content)
 
-        resp = self.get('/api/article/-1')
-        self.assertEqual(resp.status_code, 404)
-
     def test_put_article_detail(self):
         new_article = {'title': 'new article title',
                        'content': 'new article content'}
@@ -222,3 +219,8 @@ class ArticleTestCase(BlogTestCase):
         self.assertEqual(self.get('/api/article/0').status_code, 401)
         self.assertEqual(self.put('/api/article/0', {}).status_code, 401)
         self.assertEqual(self.delete('/api/article/0').status_code, 401)
+
+    def test_not_found(self):
+        self.assertEqual(self.get('/api/article/0').status_code, 404)
+        self.assertEqual(self.put('/api/article/0', {}).status_code, 404)
+        self.assertEqual(self.delete('/api/article/0').status_code, 404)
