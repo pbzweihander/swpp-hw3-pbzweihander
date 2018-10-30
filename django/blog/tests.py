@@ -110,6 +110,9 @@ class ArticleTestCase(BlogTestCase):
                                 content="article2 content", author=self.user2)
         self.article2.save()
 
+        self.comment1 = Comment(article=self.article1,
+                                content='comment 1 content', author=self.user1)
+
         self.post('/api/signin', {'username': 'user1',
                                   'password': 'user1secret'})
 
@@ -179,11 +182,14 @@ class ArticleTestCase(BlogTestCase):
 
     def test_delete_article_detail(self):
         id = self.article1.id
+        cid = self.comment1.id
         resp = self.delete('/api/article/{}'.format(id))
         self.assertEqual(resp.status_code, 200)
 
         article = Article.objects.filter(id=id)
         self.assertTrue(not article.exists())
+        comment = Comment.objects.filter(id=cid)
+        self.assertTrue(not comment.exists())
 
         resp = self.delete('/api/article/{}'.format(self.article2.id))
         self.assertEqual(resp.status_code, 403)
