@@ -35,6 +35,20 @@ def format_article(article: Article):
     }
 
 
+def format_comment_dict(comment: dict):
+    comment['article'] = comment.pop('article_id')
+    comment['author'] = comment.pop('author_id')
+    return comment
+
+
+def format_comment(comment: Comment):
+    return {
+        'article': comment.article.id,
+        'author': comment.author.id,
+        'content': comment.content,
+    }
+
+
 def signup(request):
     if request.method == 'POST':
         req_data = json.loads(request.body.decode())
@@ -128,7 +142,30 @@ def article_detail(request, article_id=-1):
 
 
 def comment(request, article_id):
-    return HttpResponse(status=500)
+    if request.method not in ['GET', 'POST']:
+        return HttpResponseNotAllowed(['GET', 'POST'])
+    else:
+        if not request.user.is_authenticated:
+            return HttpResponseUnauthorized()
+        try:
+            article = Article.objects.get(id=article_id)
+        except Article.DoesNotExist:
+            return HttpResponseNotFound()
+        if request.method == 'GET':
+            article_list = list(map(
+                format_comment_dict,
+                article.comments.values()
+            ))
+            return JsonResponse(article_list, safe=False)
+        elif request.method == 'POST':
+            body = json.loads(request.body.decode())
+            comment = Comment(
+                article=article, content=body['content'], author=request.user)
+            comment.save()
+            return HttpResponseCreated()
+        else:  # pragma: no cover
+            # unreachable code
+            raise Exception("unreachable code")
 
 
 def comment_detail(request, comment_id):

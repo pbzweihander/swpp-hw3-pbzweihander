@@ -266,7 +266,7 @@ class CommentTestCase(BlogTestCase):
 
         all_comments = Comment.objects.all()
         comment = all_comments[len(all_comments) - 1]
-        self.assertEqual(comment.article, self.article1.id)
+        self.assertEqual(comment.article, self.article1)
         self.assertEqual(comment.content, new_comment['content'])
         self.assertEqual(comment.author, self.user1)
 
