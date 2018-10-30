@@ -91,110 +91,112 @@ def signout(request):
 def article(request):
     if request.method not in ['GET', 'POST']:
         return HttpResponseNotAllowed(['GET', 'POST'])
-    else:
-        if not request.user.is_authenticated:
-            return HttpResponseUnauthorized()
-        if request.method == 'GET':
-            article_list = list(map(
-                format_article_dict,
-                [article for article in Article.objects.all().values()]
-            ))
-            return JsonResponse(article_list, safe=False)
-        elif request.method == 'POST':
-            body = json.loads(request.body.decode())
-            article = Article(
-                title=body['title'], content=body['content'], author=request.user)
-            article.save()
-            return HttpResponseCreated()
-        else:  # pragma: no cover
-            # unreachable code
-            raise Exception("unreachable code")
+
+    if not request.user.is_authenticated:
+        return HttpResponseUnauthorized()
+
+    if request.method == 'GET':
+        article_list = list(map(
+            format_article_dict,
+            [article for article in Article.objects.all().values()]
+        ))
+        return JsonResponse(article_list, safe=False)
+    elif request.method == 'POST':
+        body = json.loads(request.body.decode())
+        article = Article(
+            title=body['title'], content=body['content'], author=request.user)
+        article.save()
+        return HttpResponseCreated()
+
+    raise Exception("unreachable code")  # pragma: no cover
 
 
 def article_detail(request, article_id=-1):
     if request.method == 'POST':
         return HttpResponseNotAllowed(['GET', 'PUT', 'DELETE'])
-    else:
-        if not request.user.is_authenticated:
-            return HttpResponseUnauthorized()
-        try:
-            article = Article.objects.get(id=article_id)
-        except Article.DoesNotExist:
-            return HttpResponseNotFound()
-        if request.method == 'GET':
-            return JsonResponse(format_article(article), safe=False)
-        elif request.method == 'PUT':
-            if request.user != article.author:
-                return HttpResponseForbidden()
-            body = json.loads(request.body.decode())
-            article.title = body['title']
-            article.content = body['content']
-            article.save()
-            return HttpResponseOk()
-        elif request.method == 'DELETE':
-            if request.user != article.author:
-                return HttpResponseForbidden()
-            article.delete()
-            return HttpResponseOk()
-        else:  # pragma: no cover
-            # unreachable code
-            raise Exception("unreachable code")
+
+    if not request.user.is_authenticated:
+        return HttpResponseUnauthorized()
+    try:
+        article = Article.objects.get(id=article_id)
+    except Article.DoesNotExist:
+        return HttpResponseNotFound()
+
+    if request.method == 'GET':
+        return JsonResponse(format_article(article), safe=False)
+
+    if request.user != article.author:
+        return HttpResponseForbidden()
+
+    if request.method == 'PUT':
+        body = json.loads(request.body.decode())
+        article.title = body['title']
+        article.content = body['content']
+        article.save()
+        return HttpResponseOk()
+    elif request.method == 'DELETE':
+        article.delete()
+        return HttpResponseOk()
+
+    raise Exception("unreachable code")  # pragma: no cover
 
 
 def comment(request, article_id=-1):
     if request.method not in ['GET', 'POST']:
         return HttpResponseNotAllowed(['GET', 'POST'])
-    else:
-        if not request.user.is_authenticated:
-            return HttpResponseUnauthorized()
-        try:
-            article = Article.objects.get(id=article_id)
-        except Article.DoesNotExist:
-            return HttpResponseNotFound()
-        if request.method == 'GET':
-            article_list = list(map(
-                format_comment_dict,
-                article.comments.values()
-            ))
-            return JsonResponse(article_list, safe=False)
-        elif request.method == 'POST':
-            body = json.loads(request.body.decode())
-            comment = Comment(
-                article=article, content=body['content'], author=request.user)
-            comment.save()
-            return HttpResponseCreated()
-        else:  # pragma: no cover
-            # unreachable code
-            raise Exception("unreachable code")
+
+    if not request.user.is_authenticated:
+        return HttpResponseUnauthorized()
+
+    try:
+        article = Article.objects.get(id=article_id)
+    except Article.DoesNotExist:
+        return HttpResponseNotFound()
+
+    if request.method == 'GET':
+        article_list = list(map(
+            format_comment_dict,
+            article.comments.values()
+        ))
+        return JsonResponse(article_list, safe=False)
+    elif request.method == 'POST':
+        body = json.loads(request.body.decode())
+        comment = Comment(
+            article=article, content=body['content'], author=request.user)
+        comment.save()
+        return HttpResponseCreated()
+
+    raise Exception("unreachable code")  # pragma: no cover
 
 
 def comment_detail(request, comment_id=-1):
     if request.method == 'POST':
         return HttpResponseNotAllowed(['GET', 'PUT', 'DELETE'])
-    else:
-        if not request.user.is_authenticated:
-            return HttpResponseUnauthorized()
-        try:
-            comment = Comment.objects.get(id=comment_id)
-        except Comment.DoesNotExist:
-            return HttpResponseNotFound()
-        if request.method == 'GET':
-            return JsonResponse(format_comment(comment), safe=False)
-        elif request.method == 'PUT':
-            if request.user != comment.author:
-                return HttpResponseForbidden()
-            body = json.loads(request.body.decode())
-            comment.content = body['content']
-            comment.save()
-            return HttpResponseOk()
-        elif request.method == 'DELETE':
-            if request.user != comment.author:
-                return HttpResponseForbidden()
-            comment.delete()
-            return HttpResponseOk()
-        else:  # pragma: no cover
-            # unreachable code
-            raise Exception("unreachable code")
+
+    if not request.user.is_authenticated:
+        return HttpResponseUnauthorized()
+
+    try:
+        comment = Comment.objects.get(id=comment_id)
+    except Comment.DoesNotExist:
+        return HttpResponseNotFound()
+
+    if request.method == 'GET':
+        return JsonResponse(format_comment(comment), safe=False)
+
+    if request.user != comment.author:
+        return HttpResponseForbidden()
+
+    if request.method == 'PUT':
+        body = json.loads(request.body.decode())
+        comment.content = body['content']
+        comment.save()
+        return HttpResponseOk()
+    elif request.method == 'DELETE':
+        comment.delete()
+        return HttpResponseOk()
+
+    raise Exception("unreachable code")  # pragma: no cover
 
 
 @ensure_csrf_cookie
