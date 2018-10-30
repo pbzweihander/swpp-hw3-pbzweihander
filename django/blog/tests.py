@@ -48,6 +48,19 @@ class CsrfTestCase(TestCase):
                                content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken)
         self.assertEqual(response.status_code, 201)  # Pass csrf protection
 
+    def test_invalid_method(self):
+        client = Client(enforce_csrf_checks=True)
+
+        csrftoken = client.get('/api/token').cookies['csrftoken'].value
+        self.assertEqual(client.post(
+            '/api/token', json.dumps({}), content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken).status_code, 405)
+        csrftoken = client.get('/api/token').cookies['csrftoken'].value
+        self.assertEqual(client.put(
+            '/api/token', json.dumps({}), content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken).status_code, 405)
+        csrftoken = client.get('/api/token').cookies['csrftoken'].value
+        self.assertEqual(client.delete(
+            '/api/token', content_type='application/json', HTTP_X_CSRFTOKEN=csrftoken).status_code, 405)
+
 
 class ModelTestCase(TestCase):
     def test_basic_models(self):
