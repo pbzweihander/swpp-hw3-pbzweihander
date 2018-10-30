@@ -297,7 +297,7 @@ class CommentTestCase(BlogTestCase):
         self.assertEqual(comment.content, new_comment['content'])
 
         resp = self.put(
-            '/api/comment/{}'.format(self.article2.id), new_comment)
+            '/api/comment/{}'.format(self.comment2.id), new_comment)
         self.assertEqual(resp.status_code, 403)
 
     def test_delete_comment_detail(self):
@@ -308,7 +308,7 @@ class CommentTestCase(BlogTestCase):
         comment = Comment.objects.filter(id=id)
         self.assertTrue(not comment.exists())
 
-        resp = self.delete('/api/article/{}'.format(self.comment2.id))
+        resp = self.delete('/api/comment/{}'.format(self.comment2.id))
         self.assertEqual(resp.status_code, 403)
 
     def test_invalid_method(self):

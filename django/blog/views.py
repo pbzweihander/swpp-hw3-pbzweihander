@@ -169,7 +169,32 @@ def comment(request, article_id=-1):
 
 
 def comment_detail(request, comment_id=-1):
-    return HttpResponse(status=500)
+    if request.method == 'POST':
+        return HttpResponseNotAllowed(['GET', 'PUT', 'DELETE'])
+    else:
+        if not request.user.is_authenticated:
+            return HttpResponseUnauthorized()
+        try:
+            comment = Comment.objects.get(id=comment_id)
+        except Comment.DoesNotExist:
+            return HttpResponseNotFound()
+        if request.method == 'GET':
+            return JsonResponse(format_comment(comment), safe=False)
+        elif request.method == 'PUT':
+            if request.user != comment.author:
+                return HttpResponseForbidden()
+            body = json.loads(request.body.decode())
+            comment.content = body['content']
+            comment.save()
+            return HttpResponseOk()
+        elif request.method == 'DELETE':
+            if request.user != comment.author:
+                return HttpResponseForbidden()
+            comment.delete()
+            return HttpResponseOk()
+        else:  # pragma: no cover
+            # unreachable code
+            raise Exception("unreachable code")
 
 
 @ensure_csrf_cookie
