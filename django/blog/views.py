@@ -92,6 +92,8 @@ def article(request):
                 title=body['title'], content=body['content'], author=request.user)
             article.save()
             return HttpResponseCreated()
+        else:  # pragma: no cover
+            return HttpResponse(status=500)
 
 
 def article_detail(request, article_id=-1):
@@ -119,6 +121,8 @@ def article_detail(request, article_id=-1):
                 return HttpResponseForbidden()
             article.delete()
             return HttpResponseOk()
+        else:  # pragma: no cover
+            return HttpResponse(status=500)
 
 
 @ensure_csrf_cookie
