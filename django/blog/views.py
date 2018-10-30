@@ -22,9 +22,17 @@ def HttpResponseUnauthorized():
     return HttpResponse(status=401)
 
 
-def format_article(article):
+def format_article_dict(article: dict):
     article['author'] = article.pop('author_id')
     return article
+
+
+def format_article(article: Article):
+    return {
+        'title': article.title,
+        'author': article.author.id,
+        'content': article.content,
+    }
 
 
 def signup(request):
@@ -74,7 +82,7 @@ def article(request):
             return HttpResponseUnauthorized()
         if request.method == 'GET':
             article_list = list(map(
-                format_article,
+                format_article_dict,
                 [article for article in Article.objects.all().values()]
             ))
             return JsonResponse(article_list, safe=False)
@@ -97,7 +105,7 @@ def article_detail(request, article_id=-1):
         except Article.DoesNotExist:
             return HttpResponseNotFound()
         if request.method == 'GET':
-            return HttpResponse(status=500)
+            return JsonResponse(format_article(article), safe=False)
         elif request.method == 'PUT':
             return HttpResponse(status=500)
         elif request.method == 'DELETE':
