@@ -331,6 +331,10 @@ class CommentTestCase(BlogTestCase):
         self.assertEqual(self.delete('/api/comment/0').status_code, 401)
 
     def test_not_found(self):
+        self.assertEqual(self.get('/api/article/0/comment').status_code, 404)
+        self.assertEqual(
+            self.post('/api/article/0/comment', {}).status_code, 404)
+
         self.assertEqual(self.get('/api/comment/0').status_code, 404)
         self.assertEqual(self.put('/api/comment/0', {}).status_code, 404)
         self.assertEqual(self.delete('/api/comment/0').status_code, 404)
