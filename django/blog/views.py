@@ -141,7 +141,7 @@ def article_detail(request, article_id=-1):
             raise Exception("unreachable code")
 
 
-def comment(request, article_id):
+def comment(request, article_id=-1):
     if request.method not in ['GET', 'POST']:
         return HttpResponseNotAllowed(['GET', 'POST'])
     else:
@@ -168,7 +168,7 @@ def comment(request, article_id):
             raise Exception("unreachable code")
 
 
-def comment_detail(request, comment_id):
+def comment_detail(request, comment_id=-1):
     return HttpResponse(status=500)
 
 
