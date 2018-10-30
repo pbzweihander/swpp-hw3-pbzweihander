@@ -125,6 +125,7 @@ class ArticleTestCase(BlogTestCase):
 
         self.comment1 = Comment(article=self.article1,
                                 content='comment 1 content', author=self.user1)
+        self.comment1.save()
 
         self.post('/api/signin', {'username': 'user1',
                                   'password': 'user1secret'})
@@ -185,10 +186,6 @@ class ArticleTestCase(BlogTestCase):
         resp = self.put(
             '/api/article/{}'.format(self.article2.id), new_article)
         self.assertEqual(resp.status_code, 403)
-
-        resp = self.put(
-            '/api/article/-1', new_article)
-        self.assertEqual(resp.status_code, 404)
 
     def test_delete_article_detail(self):
         id = self.article1.id
