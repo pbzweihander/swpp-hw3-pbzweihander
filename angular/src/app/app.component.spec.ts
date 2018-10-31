@@ -1,27 +1,43 @@
-import { TestBed, async } from '@angular/core/testing';
+import { TestBed, async, ComponentFixture } from '@angular/core/testing';
+import { Component, Input } from '@angular/core';
 import { AppComponent } from './app.component';
+import { NavbarComponent } from './navbar/navbar.component';
+
+@Component({ selector: 'app-navbar', template: '' })
+class MockNavbar {
+  @Input() title: string;
+}
+
+@Component({ selector: 'router-outlet', template: '' })
+class MockRouterOutlet {
+}
+
+
 describe('AppComponent', () => {
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        AppComponent
+        AppComponent,
+        MockNavbar,
+        MockRouterOutlet,
       ],
     }).compileComponents();
   }));
-  it('should create the app', async(() => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app).toBeTruthy();
-  }));
-  it(`should have as title 'SWPP HW-2'`, async(() => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual('SWPP HW-2');
-  }));
-  it('should render title in a h1 tag', async(() => {
-    const fixture = TestBed.createComponent(AppComponent);
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
     fixture.detectChanges();
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('Finish up SWPP HW-2!');
+  });
+
+  it('should create the app', async(() => {
+    expect(component).toBeTruthy();
+  }));
+
+  it(`should have as title 'SWPP HW-2'`, async(() => {
+    expect(component.title).toEqual('SWPP HW-2');
   }));
 });
