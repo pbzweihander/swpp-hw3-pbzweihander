@@ -52,8 +52,8 @@ describe('ArticlesService', () => {
     req.flush(mockArticles);
   }));
 
-  it('should get a user of id with get request', async(() => {
-    articlesService.getArticle(mockArticle.id).then(user => expect(user).toEqual(mockArticle));
+  it('should get article of id with get request', async(() => {
+    articlesService.getArticle(mockArticle.id).then(article => expect(article).toEqual(mockArticle));
 
     const req = httpTestingController.expectOne(`${articleApi}/${mockArticle.id}`);
     expect(req.request.method).toEqual('GET');
@@ -66,7 +66,7 @@ describe('ArticlesService', () => {
       title: 'new article title',
       content: 'new article content',
     }
-    articlesService.write(newArticle).then(user => expect(user).toEqual(mockArticle));
+    articlesService.write(newArticle).then(article => expect(article).toEqual(mockArticle));
 
     const req = httpTestingController.expectOne(articleApi);
     expect(req.request.method).toEqual('POST');
