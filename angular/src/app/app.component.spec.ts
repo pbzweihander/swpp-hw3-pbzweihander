@@ -1,7 +1,6 @@
 import { TestBed, async, ComponentFixture } from '@angular/core/testing';
 import { Component, Input } from '@angular/core';
 import { AppComponent } from './app.component';
-import { NavbarComponent } from './navbar/navbar.component';
 
 @Component({ selector: 'app-navbar', template: '' })
 class MockNavbar {
