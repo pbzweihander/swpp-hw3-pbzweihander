@@ -15,8 +15,6 @@ elif [ $TYPE = 'before_script' ]; then
     cd ..
 elif [ $TYPE = 'script' ]; then
     cd django
-    echo '*** Running linter'
-    flake8 --config ./flake8
     echo '*** Running unit tests'
     coverage run --branch --source="./api" manage.py test
     cp .coverage ..

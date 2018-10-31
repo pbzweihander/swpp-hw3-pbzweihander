@@ -10,8 +10,6 @@ if [ $TYPE = 'install' ]; then
     cd ..
 elif [ $TYPE = 'script' ]; then
     cd angular
-    echo '*** Running linter'
-    npm run lint
     echo '*** Running unit tests'
     npm run test -- --code-coverage --watch false --browsers ChromeHeadless
     cd ..
