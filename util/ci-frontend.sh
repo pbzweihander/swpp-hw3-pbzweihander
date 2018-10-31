@@ -15,6 +15,7 @@ elif [ $TYPE = 'script' ]; then
     cd ..
 elif [ $TYPE = 'after_success' ]; then
     echo '*** Submitting coverage info'
+    cp .coveralls.yml angular/
     cd angular
     ./node_modules/coveralls/bin/coveralls.js .. < ./coverage/lcov.info
     cd ..
