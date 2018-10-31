@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "service_name: travis-pro" > .coveralls.yml
+echo "repo_token: $COVERALLS_TOKEN" >> .coveralls.yml
+
 if [ $TEST = 'BACKEND' ]; then
     echo "*** Configuration: Backend"
     exec ./util/ci-backend.sh $1
