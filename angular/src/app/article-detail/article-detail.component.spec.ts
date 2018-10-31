@@ -112,14 +112,14 @@ describe('ArticleDetailComponent', () => {
     });
   }));
 
-  it('should return to article list when article is unavailable', async(() => {
+  it('should return to signin when article is unavailable', async(() => {
     articlesService.getArticle.and.returnValue(new Promise(r => r(null)));
     component.ngOnInit();
     fixture.whenStable().then(() => {
       fixture.detectChanges();
       expect(articlesService.getArticle).toHaveBeenCalledWith(mockArticle.id);
       expect(component.article).toEqual(null);
-      expect(router.navigate).toHaveBeenCalledWith(['/articles']);
+      expect(router.navigate).toHaveBeenCalledWith(['/sign_in']);
     });
   }));
 
