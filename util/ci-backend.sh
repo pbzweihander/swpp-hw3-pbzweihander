@@ -17,9 +17,10 @@ elif [ $TYPE = 'script' ]; then
     cd django
     echo '*** Running unit tests'
     coverage run --branch --source="./api" manage.py test
-    cp .coverage ..
     cd ..
 elif [ $TYPE = 'after_success' ]; then
     echo '*** Submitting coverage info'
+    cp .coveralls.yml django/
+    cd django
     coveralls
 fi
