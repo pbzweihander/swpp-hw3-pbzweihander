@@ -35,9 +35,9 @@ const mockUser: User = {
 
 const mockArticle: Article = {
   id: 3,
-  author_id: 3,
-  title: 'test article 3 title',
-  content: 'test article 3 content',
+  author_id: mockUser.id,
+  title: 'article 3 title',
+  content: 'article 3 content',
 }
 
 

@@ -45,8 +45,8 @@ const mockUser: User = {
 const mockArticle: Article = {
   id: 3,
   author_id: mockUser.id,
-  title: 'test article 3 title',
-  content: 'test article 3 content',
+  title: 'article 3 title',
+  content: 'article 3 content',
 }
 
 describe('ArticleDetailComponent', () => {
