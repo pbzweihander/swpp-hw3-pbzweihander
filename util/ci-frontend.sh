@@ -11,7 +11,7 @@ if [ $TYPE = 'install' ]; then
 elif [ $TYPE = 'script' ]; then
     cd angular
     echo '*** Running unit tests'
-    npm run test -- --code-coverage --watch false --browsers ChromeHeadless
+    npm run test -- --code-coverage --watch false --sourceMap true --browsers ChromeHeadless
     cd ..
 elif [ $TYPE = 'after_success' ]; then
     echo '*** Submitting coverage info'
