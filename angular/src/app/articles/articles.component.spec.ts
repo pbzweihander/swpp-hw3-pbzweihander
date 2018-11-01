@@ -107,4 +107,9 @@ describe('ArticlesComponent', () => {
       expect(component.articles).toEqual(mockArticles);
     });
   }));
+
+  it('should navigate to article create', async(() => {
+    component.createArticle();
+    expect(router.navigate).toHaveBeenCalledWith(['/article/create']);
+  }));
 });

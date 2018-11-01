@@ -1,4 +1,4 @@
-import { TestBed, inject, async } from '@angular/core/testing';
+import { TestBed, inject, async, fakeAsync, tick } from '@angular/core/testing';
 import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { UsersService } from './users.service';
@@ -19,7 +19,7 @@ const mockUsers: User[] = [
     name: 'user2',
     signed_in: false,
   },
-]
+];
 
 const mockUser: User = {
   id: 3,
@@ -39,6 +39,7 @@ describe('UsersService', () => {
       imports: [HttpClientTestingModule],
       providers: [UsersService],
     });
+
     httpTestingController = TestBed.get(HttpTestingController);
     usersService = TestBed.get(UsersService);
   });
@@ -63,14 +64,23 @@ describe('UsersService', () => {
     req.flush(mockUser);
   }));
 
-  it('should login with proper username and password', async(() => {
-    usersService.signedIn.subscribe(user => expect(user).toEqual(mockUser))
+  it('should login with proper username and password', fakeAsync(() => {
+    let emit = spyOn(usersService.signedIn, 'emit');
     usersService.login(mockUser.email, mockUser.password)
-      .then(user => expect(user).toEqual(mockUser));
+      .then(user => {
+        expect(user).toEqual(mockUser);
+        expect(emit).toHaveBeenCalledWith(mockUser);
+      });
 
-    const req = httpTestingController.expectOne(userApi);
-    expect(req.request.method).toEqual('GET');
-    req.flush(mockUsers.concat([mockUser]));
+    const req1 = httpTestingController.expectOne(userApi);
+    expect(req1.request.method).toEqual('GET');
+    req1.flush(mockUsers.concat([mockUser]));
+
+    tick();
+
+    const req2 = httpTestingController.expectOne(`${userApi}/${mockUser.id}`);
+    expect(req2.request.method).toEqual('PUT');
+    req2.flush(mockUser);
   }));
 
   it('should not login with invalid password', async(() => {
@@ -83,7 +93,7 @@ describe('UsersService', () => {
     req.flush(mockUsers.concat([mockUser]));
   }));
 
-  it('should store signed user', async(() => {
+  it('should store signed user', fakeAsync(() => {
     usersService.signedIn.subscribe(user => expect(user).toEqual(mockUser))
     usersService.login(mockUser.email, mockUser.password)
       .then(_ => expect(usersService.getCurrentUser()).toEqual(mockUser));
@@ -91,5 +101,39 @@ describe('UsersService', () => {
     const req = httpTestingController.expectOne(userApi);
     expect(req.request.method).toEqual('GET');
     req.flush(mockUsers.concat([mockUser]));
-  }))
+
+    tick();
+
+    const req2 = httpTestingController.expectOne(`${userApi}/${mockUser.id}`);
+    expect(req2.request.method).toEqual('PUT');
+    req2.flush(mockUser);
+  }));
+
+  it('should sign out', fakeAsync(() => {
+    let emit = spyOn(usersService.signedOut, 'emit');
+    usersService.login(mockUser.email, mockUser.password)
+      .then(_ => {
+        return usersService.logout()
+      })
+      .then(_ => {
+        expect(emit).toHaveBeenCalled();
+        expect(usersService.getCurrentUser()).toBeFalsy();
+      });
+
+    const req = httpTestingController.expectOne(userApi);
+    expect(req.request.method).toEqual('GET');
+    req.flush(mockUsers.concat([mockUser]));
+
+    tick();
+
+    const req2 = httpTestingController.expectOne(`${userApi}/${mockUser.id}`);
+    expect(req2.request.method).toEqual('PUT');
+    req2.flush(mockUser);
+
+    tick();
+
+    const req3 = httpTestingController.expectOne(`${userApi}/${mockUser.id}`);
+    expect(req3.request.method).toEqual('PUT');
+    req3.flush(mockUser);
+  }));
 });
